@@ -41,7 +41,7 @@ function useAutosave(item: Item | undefined, field: "note" | "title", delay = 80
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[88px_1fr] items-center gap-3 text-[13px]">
+    <div className="grid grid-cols-[72px_1fr] items-center gap-3 text-[13px]">
       <span className="text-muted-foreground">{label}</span>
       <div className="min-w-0">{children}</div>
     </div>
@@ -228,7 +228,7 @@ export function ItemDetail({ id, onClose, full }: { id: string; onClose?: () => 
               {projects.filter((p) => p.status !== "archived").map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </Select>
           </Row>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2.5">
             <Row label="Kind">
               <Select value={item.kind} onChange={(e) => void updateItem(item.id, { kind: e.target.value as Item["kind"], ...(e.target.value === "idea" && !item.idea ? { idea: { stage: "someday" } } : {}), ...(e.target.value === "decision" && !item.decision ? { decision: { context: "", decision: "", consequences: "", decidedAt: Date.now() } } : {}) })} aria-label="Kind" className="h-8">
                 {ITEM_KINDS.map((k) => <option key={k} value={k}>{KIND_LABEL[k]}</option>)}

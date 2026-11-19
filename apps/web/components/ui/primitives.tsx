@@ -86,11 +86,11 @@ export function Label({ children, htmlFor, className, hint }: { children: ReactN
 
 export function Field({ label, hint, children, className }: { label: string; hint?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <label className={cn("flex flex-col gap-1.5", className)}>
       <span className="text-[13px] font-medium">{label}</span>
       {children}
-      {hint ? <span className="text-xs text-muted-foreground">{hint}</span> : null}
-    </div>
+      {hint ? <span className="text-xs font-normal text-muted-foreground">{hint}</span> : null}
+    </label>
   );
 }
 

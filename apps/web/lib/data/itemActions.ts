@@ -117,13 +117,19 @@ export async function requestSuggestion(itemId: string, force = false): Promise<
 }
 
 /** Fire-and-forget unfurl for items created on the client. */
-export function unfurlInBackground(itemId: string) {
-  void api("/api/unfurl", { body: { itemId } }).catch(() => {});
+export function unfurlInBackground(itemId: string, attempt = 0) {
+  // The optimistic local write may not have reached the server yet: retry NOT_FOUND a few times.
+  void api("/api/unfurl", { body: { itemId } }).catch((e) => {
+    if (e instanceof ClientApiError && e.code === "NOT_FOUND" && attempt < 4) setTimeout(() => unfurlInBackground(itemId, attempt + 1), 1200 * (attempt + 1));
+  });
 }
 
 export function aiFollowUp(itemId: string, enabled: boolean) {
   if (!enabled) return;
-  setTimeout(() => {
-    void requestSuggestion(itemId).catch((e) => toast.error(`AI: ${(e as Error).message}`));
-  }, 2500);
+  const run = (attempt: number) =>
+    requestSuggestion(itemId).catch((e) => {
+      if (e instanceof ClientApiError && e.code === "NOT_FOUND" && attempt < 3) setTimeout(() => void run(attempt + 1), 2000);
+      else toast.error(`AI: ${(e as Error).message}`);
+    });
+  setTimeout(() => void run(0), 2500);
 }

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm audit --audit-level=high --omit=dev
+        continue-on-error: true
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Firestore rules tests
+        run: npx --yes firebase-tools@15 emulators:exec --config firebase/firebase.test.json --project demo-personalhub --only firestore "npm run test -w firebase"
+      - name: Build web
+        run: npm run build -w apps/web
+        env:
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: demo-personalhub
+      - name: Build extension
+        run: npm run build -w apps/extension
+        env:
+          HUB_ORIGIN: https://example.vercel.app

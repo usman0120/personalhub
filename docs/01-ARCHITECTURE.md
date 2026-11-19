@@ -151,6 +151,10 @@ IndexedDB and updated from the delta-sync listener.
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` | server | Only if `r2` |
 | `APP_ORIGIN` | server | e.g. `https://personalhub-xyz.vercel.app`, used for CORS and links |
 | `EXTENSION_IDS` | server | Allowed `chrome-extension://<id>` origins for CORS |
+| `NEXT_PUBLIC_USE_EMULATORS` | web + server | `1` = use the local Firebase Emulator Suite (auth :9199, firestore :8180) |
+| `AI_MOCK` | server | `1` = deterministic mock AI provider (local dev / e2e only) |
+| `KEY_ENCRYPTION_SECRET_V{n}` | server | Previous encryption keys kept during rotation (lazy re-encrypt) |
+| `HUB_ORIGIN` | extension build | Hub origin written into the extension's `host_permissions` |
 
 ## 6. Architecture decisions (ADRs — copy into `docs/decisions/`)
 

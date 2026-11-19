@@ -186,11 +186,11 @@ function InboxScreen() {
 
   const actionBar = (
     <div className="flex flex-wrap items-center gap-1.5">
-      <Button size="sm" variant="primary" onClick={() => void act("accept")}><CheckCheck /> Accept all <Kbd className="hidden border-white/30 bg-white/10 text-primary-foreground md:inline-flex">A</Kbd></Button>
-      <Button size="sm" variant="outline" onClick={() => void act("keep")}><Bookmark /> Keep <Kbd className="hidden md:inline-flex">K</Kbd></Button>
-      <Button size="sm" variant="outline" onClick={() => void act("archive")}><Archive /> Archive <Kbd className="hidden md:inline-flex">R</Kbd></Button>
-      <Button size="sm" variant="outline" onClick={() => void act("delete")} className="text-destructive"><Trash2 /> Delete <Kbd className="hidden md:inline-flex">D</Kbd></Button>
-      <Button size="sm" variant="ghost" onClick={() => void act("ai")}><Sparkles /> Ask AI <Kbd className="hidden md:inline-flex">S</Kbd></Button>
+      <Button size="sm" variant="primary" onClick={() => void act("accept")}><CheckCheck /> Accept all <Kbd className="hidden border-white/30 bg-white/10 text-primary-foreground 2xl:inline-flex">A</Kbd></Button>
+      <Button size="sm" variant="outline" onClick={() => void act("keep")}><Bookmark /> Keep <Kbd className="hidden 2xl:inline-flex">K</Kbd></Button>
+      <Button size="sm" variant="outline" onClick={() => void act("archive")}><Archive /> Archive <Kbd className="hidden 2xl:inline-flex">R</Kbd></Button>
+      <Button size="sm" variant="outline" onClick={() => void act("delete")} className="text-destructive"><Trash2 /> Delete <Kbd className="hidden 2xl:inline-flex">D</Kbd></Button>
+      <Button size="sm" variant="ghost" onClick={() => void act("ai")}><Sparkles /> Ask AI <Kbd className="hidden 2xl:inline-flex">S</Kbd></Button>
     </div>
   );
 
@@ -221,7 +221,7 @@ function InboxScreen() {
         </Button>
         {importId ? <span className="text-xs text-muted-foreground">Filtered to this import</span> : null}
         <span className="ml-auto hidden text-[11px] text-muted-foreground lg:inline">
-          <Kbd>J</Kbd>/<Kbd>↑</Kbd> move · <Kbd>X</Kbd> select · <Kbd>E</Kbd> edit
+          <Kbd>A</Kbd> accept · <Kbd>K</Kbd> keep · <Kbd>R</Kbd> archive · <Kbd>D</Kbd> delete · <Kbd>J</Kbd>/<Kbd>↑</Kbd> move
         </span>
       </div>
 
@@ -252,7 +252,7 @@ function InboxScreen() {
       ) : (
         <div className="flex min-h-0 flex-1">
           {/* List (desktop) */}
-          <div className="scrollbar-thin hidden min-h-0 w-full overflow-y-auto lg:block lg:w-[420px] lg:shrink-0 lg:border-r xl:w-[460px]" role="listbox" aria-label="Inbox items">
+          <div className="scrollbar-thin hidden min-h-0 w-full overflow-y-auto lg:block lg:w-[360px] lg:shrink-0 lg:border-r xl:w-[440px]" role="listbox" aria-label="Inbox items">
             {list.map((i) => (
               <ItemRow
                 key={i.id}

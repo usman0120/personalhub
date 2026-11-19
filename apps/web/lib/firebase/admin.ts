@@ -13,8 +13,8 @@ function adminApp(): App {
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
   if (process.env.NEXT_PUBLIC_USE_EMULATORS === "1") {
-    process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8080";
-    process.env.FIREBASE_AUTH_EMULATOR_HOST ??= "127.0.0.1:9099";
+    process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8180";
+    process.env.FIREBASE_AUTH_EMULATOR_HOST ??= "127.0.0.1:9199";
     app = initializeApp({ projectId });
   } else if (clientEmail && privateKey) {
     app = initializeApp({ credential: cert({ projectId, clientEmail, privateKey }), projectId });

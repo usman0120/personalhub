@@ -297,7 +297,7 @@ function ContextChip({ ids }: { ids: string[] }) {
   const items = ids.map((id) => stores.items.get(id)).filter(Boolean);
   if (!items.length) return null;
   return (
-    <Popover trigger={<button className="text-[11.5px] text-muted-foreground hover:text-foreground">Using {items.length} items from your hub</button>} align="end">
+    <Popover trigger={<button className="text-[11.5px] text-muted-foreground hover:text-foreground">Using {items.length} {items.length === 1 ? "item" : "items"} from your hub</button>} align="end">
       <ul className="space-y-1">
         {items.map((i) => (
           <li key={i!.id}><button onClick={() => openItem(i!.id)} className="w-full truncate text-left text-[13px] hover:underline">{i!.title}</button></li>

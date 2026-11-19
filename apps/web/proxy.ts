@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
-  const emulators = process.env.NEXT_PUBLIC_USE_EMULATORS === "1" ? " http://127.0.0.1:9099 http://127.0.0.1:8080 ws://127.0.0.1:8080" : "";
+  const emulators = process.env.NEXT_PUBLIC_USE_EMULATORS === "1" ? " http://127.0.0.1:9199 http://127.0.0.1:8180 ws://127.0.0.1:8180" : "";
   const authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN ? ` https://${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}` : "";
   const csp = [
     "default-src 'self'",

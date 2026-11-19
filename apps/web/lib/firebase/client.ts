@@ -29,7 +29,7 @@ export function firebaseAuth(): Auth {
   if (!auth) {
     auth = getAuth(firebaseApp());
     void setPersistence(auth, browserLocalPersistence);
-    if (useEmulators) connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+    if (useEmulators) connectAuthEmulator(auth, "http://127.0.0.1:9199", { disableWarnings: true });
   }
   return auth;
 }
@@ -44,7 +44,7 @@ export function firestore(): Firestore {
     } catch {
       db = getFirestore(firebaseApp());
     }
-    if (useEmulators) connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    if (useEmulators) connectFirestoreEmulator(db, "127.0.0.1", 8180);
   }
   return db;
 }

@@ -77,9 +77,9 @@ export function AccountForm({ open, onOpenChange, account }: { open: boolean; on
         <Field label="Plan"><Input value={f.plan ?? ""} onChange={(e) => set("plan", e.target.value || null)} placeholder="Hobby" /></Field>
         <Field label="Cost">
           <div className="flex gap-1.5">
-            <Input type="number" min={0} step="0.01" value={f.cost?.amount ?? ""} onChange={(e) => set("cost", e.target.value === "" ? null : { currency: "USD", cycle: "monthly", ...f.cost, amount: Number(e.target.value) })} placeholder="0" className="w-24" />
-            <Select value={f.cost?.currency ?? "USD"} onChange={(e) => f.cost && set("cost", { ...f.cost, currency: e.target.value as "USD" })} className="w-20"><option>USD</option><option>PKR</option></Select>
-            <Select value={f.cost?.cycle ?? "monthly"} onChange={(e) => f.cost && set("cost", { ...f.cost, cycle: e.target.value as "monthly" })}><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="one-time">One-time</option></Select>
+            <Input type="number" min={0} step="0.01" value={f.cost?.amount ?? ""} onChange={(e) => set("cost", e.target.value === "" ? null : { currency: "USD", cycle: "monthly", ...f.cost, amount: Number(e.target.value) })} placeholder="0" className="w-20" aria-label="Amount" />
+            <Select value={f.cost?.currency ?? "USD"} onChange={(e) => f.cost && set("cost", { ...f.cost, currency: e.target.value as "USD" })} className="w-24" aria-label="Currency"><option>USD</option><option>PKR</option></Select>
+            <Select aria-label="Billing cycle" value={f.cost?.cycle ?? "monthly"} onChange={(e) => f.cost && set("cost", { ...f.cost, cycle: e.target.value as "monthly" })}><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="one-time">One-time</option></Select>
           </div>
         </Field>
         <Field label="Renewal date"><Input type="date" value={toDateInput(f.renewalDate)} onChange={(e) => set("renewalDate", fromDateInput(e.target.value))} /></Field>

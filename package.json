@@ -1,0 +1,36 @@
+{
+  "name": "personalhub",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "workspaces": [
+    "apps/web",
+    "apps/extension",
+    "packages/shared",
+    "firebase"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npm run dev -w apps/web",
+    "dev:ext": "npm run dev -w apps/extension",
+    "build:ext": "npm run build -w apps/extension",
+    "emulators": "firebase emulators:start --config firebase/firebase.json --project demo-personalhub",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:rules": "firebase emulators:exec --config firebase/firebase.json --project demo-personalhub --only firestore \"npm run test -w firebase\"",
+    "test:e2e": "npm run e2e -w apps/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "format": "prettier --write .",
+    "build": "npm run build -w apps/web && npm run build -w apps/extension",
+    "render-rules": "node scripts/render-rules.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0",
+    "@vitest/coverage-v8": "^4.0.0"
+  }
+}

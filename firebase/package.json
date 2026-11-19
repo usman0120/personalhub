@@ -1,0 +1,7 @@
+{
+  "name": "@personalhub/firebase",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "vitest run --config vitest.config.ts", "typecheck": "tsc --noEmit" },
+  "devDependencies": { "@firebase/rules-unit-testing": "^5.0.0", "firebase": "^12.6.0" }
+}

@@ -1,0 +1,174 @@
+rules_version = '2';
+// Template: OWNER_EMAILS_PLACEHOLDER is replaced by scripts/render-rules.mjs from OWNER_EMAILS.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) {
+      return signedIn()
+        && request.auth.uid == uid
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in OWNER_EMAILS_PLACEHOLDER;
+    }
+    function d() { return request.resource.data; }
+    function str(v, max) { return v is string && v.size() <= max; }
+    function optStr(v, max) { return v == null || str(v, max); }
+    function optTs(v) { return v == null || v is timestamp; }
+    function stamped() { return d().updatedAt == request.time; }
+    function createStamped() { return stamped() && d().createdAt == request.time; }
+    function immutableCreatedAt() { return d().createdAt == resource.data.createdAt; }
+    function writeStamp() {
+      return request.method == 'create' ? createStamped() : (stamped() && immutableCreatedAt());
+    }
+    function softDeletable(x) { return x.isDeleted is bool && optTs(x.deletedAt); }
+    function noSecretText(v) {
+      return !v.matches('(?is).*\\b(password|passwd|pwd|pass)\\s*[:=].*')
+        && !v.matches('(?s).*-----BEGIN [A-Z ]*PRIVATE KEY-----.*')
+        && !v.matches('(?s).*\\b(sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{35}|gh[pousr]_[A-Za-z0-9]{36}|AKIA[0-9A-Z]{16}).*');
+    }
+
+    function validItem(x) {
+      return x.keys().hasOnly(['kind','status','title','url','urlNormalized','urlHash','domain',
+          'platform','description','note','selection','faviconUrl','imageUrl','areaId','tags',
+          'projectId','pinned','source','capturedAt','reviewedAt','idea','decision','image',
+          'unfurl','ai','rulesApplied','createdAt','updatedAt','isDeleted','deletedAt'])
+        && x.keys().hasAll(['kind','status','title','note','tags','pinned','source','isDeleted'])
+        && x.kind in ['link','note','image','idea','decision']
+        && x.status in ['inbox','active','archived']
+        && x.source in ['web','extension','share','import','api','assistant']
+        && str(x.title, 300)
+        && optStr(x.get('url', null), 2048)
+        && optStr(x.get('description', null), 1000)
+        && optStr(x.get('selection', null), 5000)
+        && str(x.note, 20000)
+        && x.tags is list && x.tags.size() <= 20
+        && x.pinned is bool
+        && softDeletable(x);
+    }
+
+    function validProject(x) {
+      return x.keys().hasOnly(['name','status','areaId','color','problem','goal','doneWhen','deadline',
+          'links','lastActivityAt','createdAt','updatedAt','isDeleted','deletedAt'])
+        && str(x.name, 120) && x.name.size() > 0
+        && x.status in ['idea','active','paused','done','archived']
+        && str(x.problem, 2000) && str(x.goal, 2000) && str(x.doneWhen, 2000)
+        && x.links is list && x.links.size() <= 20
+        && optTs(x.deadline)
+        && softDeletable(x);
+    }
+
+    function validTask(x) {
+      return x.keys().hasOnly(['title','status','due','dueHasTime','priority','projectId','itemId','areaId',
+          'source','completedAt','createdAt','updatedAt','isDeleted','deletedAt'])
+        && str(x.title, 300) && x.title.size() > 0
+        && x.status in ['todo','doing','done']
+        && x.priority in [1, 2, 3]
+        && x.dueHasTime is bool
+        && optTs(x.due) && optTs(x.completedAt)
+        && x.source in ['manual','quickadd','ai']
+        && softDeletable(x);
+    }
+
+    function validAccount(x) {
+      return x.keys().hasOnly(['service','url','category','loginIdentifier','signInMethod','twoFactor',
+          'recoveryLocation','plan','cost','renewalDate','owner','clientName','status','lastReviewedAt',
+          'notes','createdAt','updatedAt','isDeleted','deletedAt'])
+        && str(x.service, 120) && x.service.size() > 0
+        && str(x.loginIdentifier, 200)
+        && str(x.recoveryLocation, 200)
+        && str(x.notes, 2000)
+        && noSecretText(x.notes) && noSecretText(x.recoveryLocation) && noSecretText(x.loginIdentifier)
+        && x.category in ['email','dev','cloud','social','freelance','finance','university','shopping','other']
+        && x.twoFactor in ['none','authenticator','passkey','security-key','sms','email']
+        && x.status in ['active','dormant','to-close','closed']
+        && softDeletable(x);
+    }
+
+    function validRule(x) {
+      return x.keys().hasOnly(['name','enabled','order','match','conditions','actions','hits','lastHitAt','createdAt','updatedAt'])
+        && str(x.name, 80) && x.enabled is bool && x.match in ['all','any']
+        && x.conditions is list && x.conditions.size() >= 1 && x.conditions.size() <= 10
+        && x.actions is map;
+    }
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && d().email == request.auth.token.email && createStamped();
+      allow update: if isOwner(uid) && d().email == resource.data.email && stamped() && immutableCreatedAt();
+      allow delete: if false;
+
+      match /items/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validItem(d()) && writeStamp();
+        allow delete: if isOwner(uid) && resource.data.isDeleted == true;
+      }
+
+      match /blobs/{id} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid) && str(d().dataBase64, 80000) && str(d().itemId, 128);
+        allow update: if false;
+      }
+
+      match /projects/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validProject(d()) && writeStamp();
+        allow delete: if isOwner(uid) && resource.data.isDeleted == true;
+      }
+
+      match /tasks/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validTask(d()) && writeStamp();
+        allow delete: if isOwner(uid) && resource.data.isDeleted == true;
+      }
+
+      match /accounts/{id} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validAccount(d()) && writeStamp();
+        allow delete: if isOwner(uid) && resource.data.isDeleted == true;
+      }
+
+      match /tags/{slug} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && d().keys().hasOnly(['name','color','lastUsedAt','createdAt'])
+          && str(d().name, 40) && slug.size() <= 40;
+      }
+
+      match /rules/{id} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && validRule(d()) && writeStamp();
+      }
+
+      match /conversations/{cid} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && d().keys().hasOnly(['title','createdAt','updatedAt']) && str(d().title, 120) && writeStamp();
+
+        match /messages/{mid} {
+          allow read, delete: if isOwner(uid);
+          allow create, update: if isOwner(uid)
+            && d().role in ['user','assistant'] && str(d().content, 20000)
+            && (!('actions' in d()) || (d().actions is list && d().actions.size() <= 10));
+        }
+      }
+
+      match /imports/{id} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && d().type in ['chrome-html','url-list','csv','json-backup']
+          && d().status in ['parsing','review','done'];
+      }
+
+      // Written only by the server (firebase-admin) with FieldValue.increment.
+      match /aiUsage/{day} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+    }
+
+    // Server-only collections
+    match /private/{document=**}       { allow read, write: if false; }
+    match /captureTokens/{document=**} { allow read, write: if false; }
+    match /rateLimits/{document=**}    { allow read, write: if false; }
+  }
+}

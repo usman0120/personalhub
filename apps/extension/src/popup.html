@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Save to PersonalHub</title>
+    <link rel="stylesheet" href="./ui.css" />
+  </head>
+  <body>
+    <div class="popup" id="app">
+      <header>
+        <img class="logo" src="/icons/48.png" alt="" />
+        <span class="name">Save to Hub</span>
+        <button class="icon" id="more" aria-label="More actions" aria-haspopup="menu">⋯</button>
+        <div class="menu" id="menu" role="menu" hidden>
+          <button role="menuitem" id="saveAll">Save all tabs in window</button>
+          <button role="menuitem" id="openHub">Open PersonalHub</button>
+          <button role="menuitem" id="openOptions">Options</button>
+        </div>
+      </header>
+      <main id="form">
+        <label class="f">Title<input type="text" id="title" maxlength="300" /></label>
+        <div class="url"><img id="favicon" alt="" hidden /><span id="url"></span></div>
+        <div class="quote" id="selection" hidden></div>
+        <div class="seg" role="group" aria-label="Kind">
+          <button data-kind="link" aria-pressed="true">Link</button>
+          <button data-kind="idea" aria-pressed="false">Idea</button>
+          <button data-kind="note" aria-pressed="false">Note</button>
+        </div>
+        <div>
+          <div class="hint" style="margin-bottom: 4px">Area</div>
+          <div class="chips" id="areas" role="radiogroup" aria-label="Area"></div>
+        </div>
+        <label class="f">Tags<input type="text" id="tags" list="tagList" placeholder="comma separated" /><datalist id="tagList"></datalist></label>
+        <label class="f">Note<textarea id="note" placeholder="Why is this worth keeping?"></textarea></label>
+        <label class="row hint"><input type="checkbox" id="ai" /> Ask AI to organise</label>
+        <div class="msg" id="msg" role="status"></div>
+      </main>
+      <div class="done" id="done" hidden>
+        <div class="big" id="doneTitle">Saved ✓</div>
+        <div class="hint" id="doneSub"></div>
+        <div class="row"><a href="#" id="openItem">Open in hub</a><span class="hint" id="undoSep">·</span><a href="#" id="undo">Undo</a></div>
+      </div>
+      <footer id="footer">
+        <span class="hint" id="queue"></span>
+        <span style="flex: 1"></span>
+        <button class="btn primary" id="save">Save</button>
+      </footer>
+    </div>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

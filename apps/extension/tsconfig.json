@@ -1,0 +1,5 @@
+{
+  "extends": "../../packages/shared/tsconfig.json",
+  "compilerOptions": { "types": ["chrome", "vite/client"], "lib": ["ES2023", "DOM", "DOM.Iterable"] },
+  "include": ["src", "vite.config.ts"]
+}

@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    { "collectionGroup": "items", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "capturedAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "items", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "areaId", "order": "ASCENDING" }, { "fieldPath": "updatedAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "items", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "projectId", "order": "ASCENDING" }, { "fieldPath": "updatedAt", "order": "DESCENDING" } ] },
+    { "collectionGroup": "items", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "urlHash", "order": "ASCENDING" }, { "fieldPath": "isDeleted", "order": "ASCENDING" } ] },
+    { "collectionGroup": "tasks", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "due", "order": "ASCENDING" } ] },
+    { "collectionGroup": "tasks", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "projectId", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" } ] },
+    { "collectionGroup": "accounts", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "renewalDate", "order": "ASCENDING" } ] },
+    { "collectionGroup": "projects", "queryScope": "COLLECTION", "fields": [
+      { "fieldPath": "isDeleted", "order": "ASCENDING" }, { "fieldPath": "status", "order": "ASCENDING" }, { "fieldPath": "lastActivityAt", "order": "DESCENDING" } ] }
+  ],
+  "fieldOverrides": []
+}

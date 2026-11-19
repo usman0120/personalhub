@@ -1,0 +1,1 @@
+{ "projects": { "default": "personalhub-prod", "dev": "personalhub-dev" } }

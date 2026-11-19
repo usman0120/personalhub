@@ -23,6 +23,6 @@ for (const e of emails) if (!/^[^\s@'"]+@[^\s@'"]+\.[^\s@'"]+$/.test(e)) {
   process.exit(1);
 }
 const tpl = readFileSync(join(root, "firebase/firestore.rules"), "utf8");
-const out = tpl.replace("OWNER_EMAILS_PLACEHOLDER", `[${emails.map((e) => `'${e}'`).join(", ")}]`);
+const out = tpl.replaceAll("OWNER_EMAILS_PLACEHOLDER", `[${emails.map((e) => `'${e}'`).join(", ")}]`);
 writeFileSync(join(root, "firebase/firestore.rendered.rules"), out);
 console.log(`Rendered rules for ${emails.length} owner email(s).`);

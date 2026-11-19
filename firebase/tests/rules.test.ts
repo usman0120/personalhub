@@ -15,7 +15,7 @@ beforeAll(async () => {
   const tpl = readFileSync(join(__dirname, "..", "firestore.rules"), "utf8");
   env = await initializeTestEnvironment({
     projectId: "demo-personalhub",
-    firestore: { rules: tpl.replace("OWNER_EMAILS_PLACEHOLDER", `['${OWNER}']`) },
+    firestore: { rules: tpl.replaceAll("OWNER_EMAILS_PLACEHOLDER", `['${OWNER}']`) },
   });
 });
 afterAll(async () => env?.cleanup());

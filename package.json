@@ -19,7 +19,7 @@
     "emulators": "firebase emulators:start --config firebase/firebase.json --project demo-personalhub",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:rules": "firebase emulators:exec --config firebase/firebase.json --project demo-personalhub --only firestore \"npm run test -w firebase\"",
+    "test:rules": "firebase emulators:exec --config firebase/firebase.test.json --project demo-personalhub --only firestore \"npm run test -w firebase\"",
     "test:e2e": "npm run e2e -w apps/web",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",

@@ -1,5 +1,5 @@
 rules_version = '2';
-// Template: OWNER_EMAILS_PLACEHOLDER is replaced by scripts/render-rules.mjs from OWNER_EMAILS.
+// Template: the owner allow-list placeholder below is filled by scripts/render-rules.mjs from OWNER_EMAILS.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -73,7 +73,7 @@ service cloud.firestore {
       return x.keys().hasOnly(['service','url','category','loginIdentifier','signInMethod','twoFactor',
           'recoveryLocation','plan','cost','renewalDate','owner','clientName','status','lastReviewedAt',
           'notes','createdAt','updatedAt','isDeleted','deletedAt'])
-        && str(x.service, 120) && x.service.size() > 0
+        && str(x['service'], 120) && x['service'].size() > 0
         && str(x.loginIdentifier, 200)
         && str(x.recoveryLocation, 200)
         && str(x.notes, 2000)

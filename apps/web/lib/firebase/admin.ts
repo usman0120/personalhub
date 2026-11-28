@@ -33,13 +33,18 @@ function adminApp(): App {
   return app;
 }
 
-/** True when the Admin SDK initialises (key parses); /api/health reports it to surface a bad deploy. */
-export function adminConfigured(): boolean {
+/** Admin SDK status for /api/health: names which env var is missing or malformed, never its value. */
+export function adminStatus(): string {
   try {
     adminApp();
-    return true;
+    return "ok";
   } catch {
-    return false;
+    const missing = ["FIREBASE_ADMIN_CLIENT_EMAIL", "FIREBASE_ADMIN_PRIVATE_KEY"].filter((k) => !unquote(process.env[k]));
+    if (missing.length) return `missing ${missing.join(", ")}`;
+    const key = normalizePrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY)!;
+    if (!key.startsWith("-----BEGIN PRIVATE KEY-----\n")) return "FIREBASE_ADMIN_PRIVATE_KEY must start with -----BEGIN PRIVATE KEY----- followed by \\n";
+    if (!key.includes("\n-----END PRIVATE KEY-----")) return "FIREBASE_ADMIN_PRIVATE_KEY is truncated (no END line)";
+    return "FIREBASE_ADMIN_PRIVATE_KEY does not parse; re-copy private_key from the JSON file";
   }
 }
 

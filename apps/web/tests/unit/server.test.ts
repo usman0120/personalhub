@@ -122,12 +122,18 @@ describe("R2 presigning", () => {
 
 describe("admin env normalisation", async () => {
   const { normalizePrivateKey, unquote } = await import("@/lib/firebase/admin");
-  const body = "-----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----\n";
-  it("accepts literal \n, real newlines and pasted quotes", () => {
-    expect(normalizePrivateKey(body.replace(/\n/g, "\n"))).toBe(body);
+  const b64 = "QUJD".repeat(20); // 80 chars, so the rebuilt PEM wraps at 64
+  const body = `-----BEGIN PRIVATE KEY-----\n${b64.slice(0, 64)}\n${b64.slice(64)}\n-----END PRIVATE KEY-----\n`;
+  const escaped = body.replace(/\n/g, "\\n");
+  it("rebuilds the PEM from literal \\n, real newlines, spaces and pasted quotes", () => {
+    expect(escaped).toContain("\\n");
+    expect(normalizePrivateKey(escaped)).toBe(body);
     expect(normalizePrivateKey(body)).toBe(body);
-    expect(normalizePrivateKey(`"${body.replace(/\n/g, "\n")}"`)).toBe(body);
+    expect(normalizePrivateKey(`"${escaped}"`)).toBe(body);
     expect(normalizePrivateKey(body.trimEnd())).toBe(body);
+    expect(normalizePrivateKey(body.replace(/\n/g, " "))).toBe(body);
+    expect(normalizePrivateKey(body.replace(/\n/g, "\r\n"))).toBe(body);
+    expect(normalizePrivateKey(`-----BEGIN PRIVATE KEY----- ${b64} -----END PRIVATE KEY-----`)).toBe(body);
     expect(normalizePrivateKey("")).toBeUndefined();
   });
   it("strips one pair of wrapping quotes", () => {

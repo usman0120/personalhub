@@ -9,10 +9,17 @@ let db: Firestore | undefined;
 /** Env UIs often keep the quotes from a pasted .env line; strip one matching pair. */
 export const unquote = (v?: string) => v?.trim().replace(/^(['"])([\s\S]*)\1$/, "$2").trim() || undefined;
 
-/** Accepts the key with real newlines, literal "\n" sequences, or wrapped in quotes. */
+/**
+ * Rebuilds a PEM key from whatever an env UI kept: real newlines, literal "\n", spaces instead of
+ * line breaks, wrapping quotes. Only the base64 body between the BEGIN/END lines matters.
+ */
 export function normalizePrivateKey(v?: string): string | undefined {
-  const key = unquote(v)?.replace(/\\n/g, "\n").replace(/\r/g, "");
-  return key ? (key.endsWith("\n") ? key : `${key}\n`) : undefined;
+  const raw = unquote(v)?.replace(/\\n/g, "\n");
+  if (!raw) return undefined;
+  const m = raw.match(/-----BEGIN ([A-Z ]*PRIVATE KEY)-----([\s\S]*?)-----END \1-----/);
+  if (!m) return raw.replace(/\r/g, "");
+  const body = m[2]!.replace(/[^A-Za-z0-9+/=]/g, "");
+  return `-----BEGIN ${m[1]}-----\n${body.match(/.{1,64}/g)!.join("\n")}\n-----END ${m[1]}-----\n`;
 }
 
 function adminApp(): App {

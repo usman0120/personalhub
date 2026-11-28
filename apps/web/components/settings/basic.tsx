@@ -22,15 +22,17 @@ export function SectionTitle({ title, description }: { title: string; descriptio
   );
 }
 
-export function SettingRow({ title, description, children }: { title: string; description?: React.ReactNode; children: React.ReactNode }) {
+/** `control` renders the row as a <label> so its single input/select gets an accessible name. */
+export function SettingRow({ title, description, children, control }: { title: string; description?: React.ReactNode; children: React.ReactNode; control?: boolean }) {
+  const Root = control ? "label" : "div";
   return (
-    <div className="flex flex-col gap-2 border-b py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+    <Root className="flex flex-col gap-2 border-b py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
       <div className="min-w-0">
         <p className="text-[13.5px] font-medium">{title}</p>
         {description ? <p className="text-[12.5px] text-muted-foreground">{description}</p> : null}
       </div>
       <div className="shrink-0">{children}</div>
-    </div>
+    </Root>
   );
 }
 
@@ -45,29 +47,29 @@ export function GeneralSection() {
   return (
     <>
       <SectionTitle title="General" />
-      <SettingRow title="Name">
+      <SettingRow control title="Name">
         <Input defaultValue={profile?.displayName} onBlur={(e) => e.target.value.trim() && void updateProfile({ displayName: e.target.value.trim().slice(0, 80) })} className="w-56" />
       </SettingRow>
-      <SettingRow title="Timezone">
+      <SettingRow control title="Timezone">
         <Select value={profile?.timezone ?? "Asia/Karachi"} onChange={(e) => void updateProfile({ timezone: e.target.value })} className="w-56">
           {zones.map((z) => <option key={z}>{z}</option>)}
         </Select>
       </SettingRow>
-      <SettingRow title="Theme">
+      <SettingRow control title="Theme">
         <Select value={settings.theme} onChange={(e) => void save({ theme: e.target.value })} className="w-40">
           <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
         </Select>
       </SettingRow>
-      <SettingRow title="PKR per USD" description="Used for the monthly cost summary in Accounts.">
+      <SettingRow control title="PKR per USD" description="Used for the monthly cost summary in Accounts.">
         <Input type="number" min={1} step="0.01" defaultValue={settings.pkrPerUsd} onBlur={(e) => Number(e.target.value) > 0 && void save({ pkrPerUsd: Number(e.target.value) })} className="w-32" />
       </SettingRow>
-      <SettingRow title="Default area for new captures">
+      <SettingRow control title="Default area for new captures">
         <Select value={settings.defaultAreaId ?? ""} onChange={(e) => void save({ defaultAreaId: e.target.value || null })} className="w-48">
           <option value="">None (Inbox decides)</option>
           {settings.areas.filter((a) => !a.archived).map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
         </Select>
       </SettingRow>
-      <SettingRow title="Inbox zero goal">
+      <SettingRow control title="Inbox zero goal">
         <Select value={settings.inboxZeroGoal} onChange={(e) => void save({ inboxZeroGoal: e.target.value })} className="w-32">
           <option value="weekly">Weekly</option><option value="daily">Daily</option>
         </Select>

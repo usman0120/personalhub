@@ -8,6 +8,8 @@ export default defineConfig({
   testDir: "tests/e2e",
   timeout: 60_000,
   retries: 0,
+  // One `next dev` server compiles routes on demand; more workers just cause timeouts.
+  workers: 2,
   use: { baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000", trace: "retain-on-failure" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },

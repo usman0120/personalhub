@@ -27,7 +27,12 @@ test("quick add → inbox triage with keyboard", async ({ page }) => {
   await box.fill("todo: e2e task tomorrow !1");
   await box.press("Enter");
   await page.goto("/inbox");
-  await expect(page.getByText(/Remember e2e note/).first()).toBeVisible();
+  if (test.info().project.name === "mobile") {
+    // Mobile inbox is a one-at-a-time card stack: the active item's title is an editable field.
+    await expect(page.getByRole("textbox", { name: "Title" })).toHaveValue(/Remember e2e note/);
+  } else {
+    await expect(page.getByText(/Remember e2e note/).first()).toBeVisible();
+  }
   await page.keyboard.press("k");
   await expect(page.getByText("Item kept").or(page.getByText("Accepted and kept"))).toBeVisible();
   await page.goto("/tasks");
@@ -47,9 +52,11 @@ for (const path of ["/", "/inbox", "/library", "/tasks", "/projects", "/accounts
   test(`a11y: ${path}`, async ({ page }) => {
     await signIn(page);
     await page.goto(path);
-    await page.waitForLoadState("networkidle");
+    // Firestore keeps a live channel open, so "networkidle" never settles; wait for the page body.
+    await expect(page.locator("main").first()).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("[aria-busy='true']")).toHaveCount(0, { timeout: 10_000 });
     const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-    expect(serious.map((v) => `${v.id}: ${v.nodes.length}`)).toEqual([]);
+    expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ") + " " + (n.any[0]?.message ?? "")).join(" | ")}`)).toEqual([]);
   });
 }

@@ -252,7 +252,7 @@ function InboxScreen() {
       ) : (
         <div className="flex min-h-0 flex-1">
           {/* List (desktop) */}
-          <div className="scrollbar-thin hidden min-h-0 w-full overflow-y-auto lg:block lg:w-[360px] lg:shrink-0 lg:border-r xl:w-[440px]" role="listbox" aria-label="Inbox items">
+          <div className="scrollbar-thin hidden min-h-0 w-full overflow-y-auto lg:block lg:w-[360px] lg:shrink-0 lg:border-r xl:w-[440px]" role="region" aria-label="Inbox items">
             {list.map((i) => (
               <ItemRow
                 key={i.id}

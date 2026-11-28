@@ -22,16 +22,11 @@ interface Props {
 export const ItemRow = memo(function ItemRow({ item, area, active, selected, selectable, onOpen, onSelect, selectedIds }: Props) {
   return (
     <div
-      role="button"
-      tabIndex={0}
       data-item-id={item.id}
       aria-current={active ? "true" : undefined}
       onClick={(e) => onOpen(item, e)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" && e.target === e.currentTarget) onOpen(item, e as unknown as React.MouseEvent);
-      }}
       className={cn(
-        "group flex cursor-pointer items-start gap-3 border-b px-4 py-2.5 outline-none transition-colors hover:bg-accent/50 focus-visible:bg-accent/60 md:px-6",
+        "group flex cursor-pointer items-start gap-3 border-b px-4 py-2.5 outline-none transition-colors hover:bg-accent/50 has-[:focus-visible]:bg-accent/60 md:px-6",
         active && "bg-accent/70",
         selected && "bg-primary/[0.06]",
       )}
@@ -57,7 +52,7 @@ export const ItemRow = memo(function ItemRow({ item, area, active, selected, sel
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-start gap-1.5">
-          <p className="line-clamp-2 flex-1 text-[13.5px] leading-5 font-medium break-words">{item.title}</p>
+          <button type="button" className="line-clamp-2 flex-1 text-left text-[13.5px] leading-5 font-medium break-words outline-none">{item.title}</button>
           {item.pinned ? <Pin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" aria-label="Pinned" /> : null}
           <AiBadge item={item} />
         </div>

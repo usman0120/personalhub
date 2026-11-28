@@ -5,5 +5,5 @@
   "type": "module",
   "scripts": { "dev": "vite build --watch --mode development", "build": "vite build", "typecheck": "tsc --noEmit" },
   "dependencies": { "@personalhub/shared": "*" },
-  "devDependencies": { "vite": "^7.2.0", "@types/chrome": "^0.1.0" }
+  "devDependencies": { "vite": "^7.2.0", "@types/chrome": "^0.3.7" }
 }

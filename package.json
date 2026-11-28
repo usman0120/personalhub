@@ -25,7 +25,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "format": "prettier --write .",
     "build": "npm run build -w apps/web && npm run build -w apps/extension",
-    "render-rules": "node scripts/render-rules.mjs"
+    "render-rules": "node scripts/render-rules.mjs",
+    "deploy:rules": "node scripts/render-rules.mjs && firebase deploy --only firestore:rules,firestore:indexes --config firebase/firebase.json"
   },
   "devDependencies": {
     "prettier": "^3.6.0",

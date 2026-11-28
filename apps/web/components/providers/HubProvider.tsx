@@ -92,7 +92,13 @@ export function HubProvider({ children }: { children: ReactNode }) {
         const offline = e instanceof ClientApiError && e.code === "NETWORK";
         if (!(offline && localStorage.getItem(OWNER_OK_KEY) === u.uid)) {
           if (e instanceof ClientApiError && (e.code === "FORBIDDEN" || e.code === "UNAUTHENTICATED")) {
-            setRejected(u.emailVerified ? "This PersonalHub belongs to someone else." : "Verify your email address first, then sign in again.");
+            setRejected(
+              !u.emailVerified
+                ? "Verify your email address first, then sign in again."
+                : e.code === "FORBIDDEN"
+                  ? "This PersonalHub belongs to someone else."
+                  : "Your session could not be verified. Sign in again.",
+            );
             setStatus("rejected");
             await signOut(auth);
             return;

@@ -33,7 +33,7 @@ export interface AuthContext {
 }
 
 export const ownerEmails = () =>
-  (process.env.OWNER_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  (process.env.OWNER_EMAILS ?? "").split(",").map((e) => e.trim().replace(/^['"]|['"]$/g, "").trim().toLowerCase()).filter(Boolean);
 
 export function hashCaptureToken(token: string): string {
   return createHash("sha256").update(`${process.env.CAPTURE_TOKEN_PEPPER ?? ""}${token}`).digest("hex");
@@ -65,7 +65,13 @@ export async function authenticate(req: Request, modes: AuthMode[], scope?: stri
   let decoded;
   try {
     decoded = await adminAuth().verifyIdToken(token, true);
-  } catch {
+  } catch (e) {
+    const code = (e as { code?: string }).code ?? "";
+    // Bad service-account env (unparseable key, wrong project) is a server problem, not the user's.
+    if (!code.startsWith("auth/") || code === "auth/invalid-credential" || code === "auth/project-not-found") {
+      console.error("verifyIdToken failed", code, (e as Error).message);
+      throw fail("INTERNAL", "Server sign-in check failed: Firebase Admin credentials on the server are invalid");
+    }
     throw fail("UNAUTHENTICATED", "Invalid or expired session");
   }
   const email = decoded.email?.toLowerCase();

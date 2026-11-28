@@ -119,3 +119,20 @@ describe("R2 presigning", () => {
     expect(url.searchParams.get("X-Amz-Signature")).toMatch(/^[0-9a-f]{64}$/);
   });
 });
+
+describe("admin env normalisation", async () => {
+  const { normalizePrivateKey, unquote } = await import("@/lib/firebase/admin");
+  const body = "-----BEGIN PRIVATE KEY-----\nABC\n-----END PRIVATE KEY-----\n";
+  it("accepts literal \n, real newlines and pasted quotes", () => {
+    expect(normalizePrivateKey(body.replace(/\n/g, "\n"))).toBe(body);
+    expect(normalizePrivateKey(body)).toBe(body);
+    expect(normalizePrivateKey(`"${body.replace(/\n/g, "\n")}"`)).toBe(body);
+    expect(normalizePrivateKey(body.trimEnd())).toBe(body);
+    expect(normalizePrivateKey("")).toBeUndefined();
+  });
+  it("strips one pair of wrapping quotes", () => {
+    expect(unquote(' "a@b.co" ')).toBe("a@b.co");
+    expect(unquote("'x'")).toBe("x");
+    expect(unquote('"x')).toBe('"x');
+  });
+});
